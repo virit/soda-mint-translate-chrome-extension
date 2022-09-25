@@ -12,6 +12,8 @@
 # webstorm project dir
 /.idea
 
+yarn.lock
+
 # misc
 .DS_Store
 .env.local
