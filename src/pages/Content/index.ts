@@ -1,23 +1,8 @@
-import axios from "axios";
+import {Dict, hash, loadResource} from "../../utils/util";
 
-console.log(chrome.runtime.getURL('/test.json'))
-
-const xhr = new XMLHttpRequest();
-xhr.onreadystatechange = function(e) {
-  console.log(xhr.responseText)
-}
-xhr.open("GET", chrome.runtime.getURL('/test.json'), true);
-xhr.send();
-
-axios({
-  method: 'get',
-  url: 'extension://plmgbamlefaijolbndmhmekfpcmbddhl/test.json',
-  responseType: 'json'
-}).then(response => {
-  // 请求成功
-  let res = response.data;
-  console.log(res);
-});
+loadResource('/test.json').then(text => {
+  console.log(text)
+})
 
 class TipsElement {
 
@@ -64,40 +49,42 @@ class TipsElement {
 
 const tipsElement = new TipsElement()
 
-const transferd = [] as HTMLElement[]
 
-function getWordUnderCursor(event: MouseEvent) {
-  let range, textNode, offset;
+function getWordUnderCursor(event: MouseEvent): string {
 
-  if (document.body.createTextRange) {           // Internet Explorer
-    try {
-      range = document.body.createTextRange();
-      range.moveToPoint(event.clientX, event.clientY);
-      range.select();
-      range = getTextRangeBoundaryPosition(range, true);
+  const range = document.caretRangeFromPoint(event.clientX, event.clientY)
+  if (!range) return ''
+  const textNode = range.startContainer as any;
+  const offset = range.startOffset;
 
-      textNode = range.node;
-      offset = range.offset;
-    } catch(e) {
-      return "";
-    }
-  }
-  else if (document.caretPositionFromPoint) {    // Firefox
-    range = document.caretPositionFromPoint(event.clientX, event.clientY);
-    textNode = range.offsetNode;
-    offset = range.offset;
-  } else if (document.caretRangeFromPoint) {     // Chrome
-    range = document.caretRangeFromPoint(event.clientX, event.clientY);
-    textNode = range.startContainer;
-    offset = range.startOffset;
-  }
+  // if (document.body.createTextRange) {           // Internet Explorer
+  //   try {
+  //     range = document.body.createTextRange();
+  //     range.moveToPoint(event.clientX, event.clientY);
+  //     range.select();
+  //     range = getTextRangeBoundaryPosition(range, true);
+  //
+  //     textNode = range.node;
+  //     offset = range.offset;
+  //   } catch(e) {
+  //     return "";
+  //   }
+  // }
+  // else if (document.caretPositionFromPoint) {    // Firefox
+  //   range = document.caretPositionFromPoint(event.clientX, event.clientY);
+  //   textNode = range.offsetNode;
+  //   offset = range.offset;
+  // } else if (document.caretRangeFromPoint) {     // Chrome
+  //   range = document.caretRangeFromPoint(event.clientX, event.clientY);
+  //   textNode = range.startContainer;
+  //   offset = range.startOffset;
+  // }
 
   //data contains a full sentence
   //offset represent the cursor position in this sentence
-  var data = textNode.data,
-      i = offset,
-      begin,
-      end;
+  const data = textNode.data
+  let i = offset
+  let begin, end;
 
   //Find the begin of the word (space)
   while (i > 0 && data[i] !== " ") { --i; };
@@ -112,13 +99,18 @@ function getWordUnderCursor(event: MouseEvent) {
   return data.substring(begin, end);
 }
 
-document!.body.onmousemove = function(e) {
+document!.body.onmousemove = async function (e) {
 
   const word = getWordUnderCursor(e)
   if (word) {
-    tipsElement.setPos(e.pageX + 4, e.pageY - tipsElement.element.clientHeight - 4)
-    tipsElement.setText(word)
-    tipsElement.show()
+    const hashCode = hash(word)
+    const jsonText = await loadResource(`/dict/${hashCode}.json`)
+    const dict = JSON.parse(jsonText) as Dict
+    if (word in dict) {
+      tipsElement.setPos(e.pageX + 4, e.pageY - tipsElement.element.clientHeight - 4)
+      tipsElement.setText(dict[word].word)
+      tipsElement.show()
+    }
   } else {
     tipsElement.hide()
   }
@@ -126,5 +118,4 @@ document!.body.onmousemove = function(e) {
 
 document!.body.onmouseout = function(e) {
 
-  // tipsElement.hide()
 }
