@@ -1,4 +1,4 @@
-import {Dict, DictRecord, hash, loadResource} from '../../utils/util'
+import {Dict, DictRecord, hash, isWord, loadResource} from '../../utils/util'
 
 const jsonStyle = (json: {[key: string]: string | number}) => {
   let css = ''
@@ -14,10 +14,10 @@ const jsonStyle = (json: {[key: string]: string | number}) => {
 class TipsElement {
 
   element = document.createElement('div')
-  dictRecord: DictRecord = {word: '', phonetic: '', translation: ''}
-  x = 0
-  y = 0
-  hidden = true
+  private dictRecord: DictRecord = {word: '', phonetic: '', translation: ''}
+  private x = 0
+  private y = 0
+  private hidden = true
 
   constructor() {
     document.body.append(this.element)
@@ -54,7 +54,7 @@ class TipsElement {
       'background': 'rgba(50,50,50,0.9)',
       'padding': '8px',
       'border-radius': '2px',
-      'display': `display: ${this.hidden ? 'none' : 'block'}`,
+      'display': `${this.hidden ? 'none' : 'block'}`,
       'left': `${this.x}px`,
       'top': `${this.y}px`,
     })
@@ -117,20 +117,20 @@ let preWord = ''
 
 document!.body.onmousemove = function (e) {
   const word = getWordUnderCursor(e)
-  if (word) {
+  if (isWord(word)) {
+    tipsElement.setPos(e.pageX + 4, e.pageY - tipsElement.element.clientHeight - 4)
     if (preWord !== word) {
       preWord = word
       const hashCode = hash(word)
-      console.log(`${word}-${hashCode}`)
-      tipsElement.show()
       loadResource<Dict>(`/dictionaries/${hashCode}.json`, dict => {
         if (word in dict) {
           tipsElement.setDictRecord(dict[word])
+          tipsElement.show()
+        } else {
+          tipsElement.hide()
         }
       })
     }
-    tipsElement.setPos(e.pageX + 4, e.pageY - tipsElement.element.clientHeight - 4)
-    tipsElement.show()
   } else {
     tipsElement.hide()
   }
