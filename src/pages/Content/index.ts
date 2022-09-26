@@ -1,5 +1,16 @@
-import {Dict, DictRecord, hash, isWord, loadResource} from "../../utils/util"
+import {Dict, DictRecord, hash, loadResource} from '../../utils/util'
 
+const jsonStyle = (json: {[key: string]: string | number}) => {
+  let css = ''
+  for (let key in json) {
+    css += `${key}: ${json[key]}; `
+  }
+  return css
+}
+
+/**
+ * 提示组件
+ */
 class TipsElement {
 
   element = document.createElement('div')
@@ -13,15 +24,45 @@ class TipsElement {
     this.render()
   }
 
-  render() {
-    const staticStyles = 'z-index: 1000; position: absolute; background: rgba(50,50,50,0.9); color: #ffffff; padding: 8px; border-radius: 2px;'
-    const display = `display: ${this.hidden ? 'none' : 'block'};`
-    const pos = `left: ${this.x}px; top: ${this.y}px`
+  /**
+   * 单词样式
+   */
+  private wordStyle = jsonStyle({
+    'font-weight': 'bold',
+    'color': '#ffffff',
+    'font-size': '14px',
+    'margin-top': 0,
+    'margin-bottom': '4px',
+  })
 
-    this.element.setAttribute('style', `${staticStyles} ${display} ${pos}`)
+  /**
+   * 翻译样式
+   */
+  private translationStyle = jsonStyle({
+    'white-space': 'pre-line',
+    'color': '#ffffff',
+    'font-size': '12px',
+    'margin-top': 0,
+    'margin-bottom': 0
+  })
+
+  render() {
+    // 显示容器样式
+    const containerStyle = jsonStyle({
+      'z-index': 1000,
+      'position': 'absolute',
+      'background': 'rgba(50,50,50,0.9)',
+      'padding': '8px',
+      'border-radius': '2px',
+      'display': `display: ${this.hidden ? 'none' : 'block'}`,
+      'left': `${this.x}px`,
+      'top': `${this.y}px`,
+    })
+
+    this.element.setAttribute('style', containerStyle)
     this.element.innerHTML = `
-      <p style="font-weight: bold; color: #ffffff; font-size: 14px; margin-top: 0; margin-bottom: 4px;">${this.dictRecord.word}</p>
-      <p style="white-space: pre-line; color: #ffffff; font-size: 12px; margin-top: 0; margin-bottom: 0;">${this.dictRecord.translation}</p>
+      <p style="${this.wordStyle}">${this.dictRecord.word}</p>
+      <p style="${this.translationStyle}">${this.dictRecord.translation}</p>
     `
   }
 
