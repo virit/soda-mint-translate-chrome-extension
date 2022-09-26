@@ -132,6 +132,7 @@ document!.body.onmousemove = function (e) {
       })
     }
   } else {
+    preWord = ''
     tipsElement.hide()
   }
 }
