@@ -14,14 +14,14 @@ class TipsElement {
   }
 
   render() {
-    const staticStyles = 'z-index: 1000; position: absolute; background: #323232; color: #ffffff; padding: 8px; border-radius: 2px;'
+    const staticStyles = 'z-index: 1000; position: absolute; background: rgba(50,50,50,0.9); color: #ffffff; padding: 8px; border-radius: 2px;'
     const display = `display: ${this.hidden ? 'none' : 'block'};`
     const pos = `left: ${this.x}px; top: ${this.y}px`
 
     this.element.setAttribute('style', `${staticStyles} ${display} ${pos}`)
     this.element.innerHTML = `
-      <p style="color: #ffffff; font-size: 12px; margin-top: 0; margin-bottom: 4px;">${this.dictRecord.word}</p>
-      <p style="color: #ffffff; font-size: 12px; margin-top: 0; margin-bottom: 0;">${this.dictRecord.translation}</p>
+      <p style="font-weight: bold; color: #ffffff; font-size: 14px; margin-top: 0; margin-bottom: 4px;">${this.dictRecord.word}</p>
+      <p style="white-space: pre-line; color: #ffffff; font-size: 12px; margin-top: 0; margin-bottom: 0;">${this.dictRecord.translation}</p>
     `
   }
 
