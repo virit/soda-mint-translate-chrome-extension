@@ -42,7 +42,9 @@ export const loadResource = <T>(resource: string, callback: (object: T) => void)
 
   const xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function (e) {
-    callback(JSON.parse(xhr.responseText) as T)
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      callback(JSON.parse(xhr.responseText) as T)
+    }
   }
   xhr.open("GET", chrome.runtime.getURL(resource).toString(), true);
   xhr.send();
