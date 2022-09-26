@@ -20,7 +20,7 @@ const db = new Database(dictFile, () => {
         dictArray[hashCode][record.word] = record
       }
     })
-    const dirName = './build/dictionaries'
+    const dirName = './src/dictionaries'
     if (!fs.existsSync(dirName)) {
       fs.mkdirSync(dirName)
     }
