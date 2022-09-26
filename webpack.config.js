@@ -1,22 +1,26 @@
-var webpack = require('webpack'),
-  path = require('path'),
-  fileSystem = require('fs-extra'),
-  env = require('./utils/env'),
-  CopyWebpackPlugin = require('copy-webpack-plugin'),
-  HtmlWebpackPlugin = require('html-webpack-plugin'),
-  TerserPlugin = require('terser-webpack-plugin');
-var { CleanWebpackPlugin } = require('clean-webpack-plugin');
+import webpack from 'webpack'
+import path from 'path'
+import fileSystem from 'fs-extra'
+import env from './utils/env.js'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import TerserPlugin from 'terser-webpack-plugin'
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
+import {fileURLToPath} from 'url'
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
-var alias = {
+const alias = {
   'react-dom': '@hot-loader/react-dom',
 };
 
-// load the secrets
-var secretsPath = path.join(__dirname, 'secrets.' + env.NODE_ENV + '.js');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-var fileExtensions = [
+// load the secrets
+const secretsPath = path.join(__dirname, 'secrets.' + env.NODE_ENV + '.js');
+
+const fileExtensions = [
   'jpg',
   'jpeg',
   'png',
@@ -33,7 +37,7 @@ if (fileSystem.existsSync(secretsPath)) {
   alias['secrets'] = secretsPath;
 }
 
-var options = {
+const options = {
   mode: process.env.NODE_ENV || 'development',
   entry: {
     newtab: path.join(__dirname, 'src', 'pages', 'Newtab', 'index.jsx'),
@@ -112,7 +116,7 @@ var options = {
   plugins: [
     new CleanWebpackPlugin({ verbose: false }),
     new webpack.ProgressPlugin(),
-    // expose and write the allowed env vars on the compiled bundle
+    // expose and write the allowed env consts on the compiled bundle
     new webpack.EnvironmentPlugin(['NODE_ENV']),
     new CopyWebpackPlugin({
       patterns: [
@@ -209,4 +213,4 @@ if (env.NODE_ENV === 'development') {
   };
 }
 
-module.exports = options;
+export default options;
