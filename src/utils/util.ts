@@ -38,14 +38,16 @@ export const hash = (str: string): number => {
   return code % HASH_SIZE
 }
 
-export const loadResource = <T>(resource: string, callback: (object: T) => void) => {
+export const loadResource = async <T>(resource: string): Promise<T> => {
 
-  const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function (e) {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      callback(JSON.parse(xhr.responseText) as T)
+  return new Promise<T>(resolve => {
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function (e) {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        resolve(JSON.parse(xhr.responseText) as T)
+      }
     }
-  }
-  xhr.open("GET", chrome.runtime.getURL(resource).toString(), true);
-  xhr.send();
+    xhr.open("GET", chrome.runtime.getURL(resource).toString(), true);
+    xhr.send();
+  })
 }

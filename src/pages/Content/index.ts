@@ -115,28 +115,23 @@ function getWordUnderCursor(event: MouseEvent): string {
 
 let preWord = ''
 
-document!.body.onmousemove = function (e) {
+document!.body.onmousemove = async (e) => {
   const word = getWordUnderCursor(e)
   if (isWord(word)) {
     tipsElement.setPos(e.pageX + 4, e.pageY - tipsElement.element.clientHeight - 4)
     if (preWord !== word) {
       preWord = word
       const hashCode = hash(word)
-      loadResource<Dict>(`/dictionaries/${hashCode}.json`, dict => {
-        if (word in dict) {
-          tipsElement.setDictRecord(dict[word])
-          tipsElement.show()
-        } else {
-          tipsElement.hide()
-        }
-      })
+      const dict = await loadResource<Dict>(`/dictionaries/${hashCode}.json`)
+      if (word in dict) {
+        tipsElement.setDictRecord(dict[word])
+        tipsElement.show()
+      } else {
+        tipsElement.hide()
+      }
     }
   } else {
     preWord = ''
     tipsElement.hide()
   }
-}
-
-document!.body.onmouseout = function (e) {
-
 }
