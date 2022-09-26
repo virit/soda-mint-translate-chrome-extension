@@ -21,6 +21,7 @@ yarn.lock
 .env.test.local
 .env.production.local
 .history
+.db
 
 # secrets
 secrets.*.js
