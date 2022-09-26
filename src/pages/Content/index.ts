@@ -1,8 +1,4 @@
-import {Dict, hash, loadResource} from "../../utils/util"
-
-loadResource('/test.json').then(text => {
-  console.log(text)
-})
+import {Dict, hash, isWord} from "../../utils/util"
 
 class TipsElement {
 
@@ -53,74 +49,44 @@ const tipsElement = new TipsElement()
 function getWordUnderCursor(event: MouseEvent): string {
 
   const range = document.caretRangeFromPoint(event.clientX, event.clientY)
-  if (!range) return ''
-  const textNode = range.startContainer as any
-  const offset = range.startOffset
+  const textNode = range?.startContainer as any
+  const offset = range?.startOffset
 
-  // if (document.body.createTextRange) {           // Internet Explorer
-  //   try {
-  //     range = document.body.createTextRange()
-  //     range.moveToPoint(event.clientX, event.clientY)
-  //     range.select()
-  //     range = getTextRangeBoundaryPosition(range, true)
-  //
-  //     textNode = range.node
-  //     offset = range.offset
-  //   } catch(e) {
-  //     return ""
-  //   }
-  // }
-  // else if (document.caretPositionFromPoint) {    // Firefox
-  //   range = document.caretPositionFromPoint(event.clientX, event.clientY)
-  //   textNode = range.offsetNode
-  //   offset = range.offset
-  // } else if (document.caretRangeFromPoint) {     // Chrome
-  //   range = document.caretRangeFromPoint(event.clientX, event.clientY)
-  //   textNode = range.startContainer
-  //   offset = range.startOffset
-  // }
-
-  //data contains a full sentence
-  //offset represent the cursor position in this sentence
   const data = textNode.data
-  let i = offset
+  if (!data) return ''
   let begin, end
-
-  //Find the begin of the word (space)
-  while (i > 0 && data[i] !== " ") {
-    --i
+  let i = offset || 0
+  while (i > 0 && /^[a-zA-Z]$/d.test(data[i]) && data[i] !== '') {
+    i--
   }
-  
   begin = i
-
-  //Find the end of the word
-  i = offset
-  while (i < data.length && data[i] !== " ") {
-    ++i
+  i = offset || data.length
+  while (i < data.length && /^[a-zA-Z]$/d.test(data[i]) && data[i] !== '') {
+    i++
   }
-  
   end = i
-
-  //Return the word under the mouse cursor
-  return data.substring(begin, end)
+  return data.substring(begin, end).trim().toLowerCase()
 }
 
-document!.body.onmousemove = async function (e) {
+let preWord = ''
 
+document!.body.onmousemove = async function (e) {
   const word = getWordUnderCursor(e)
-  tipsElement.setText(word)
-  tipsElement.show()
-  if (word) {
+  if (word && preWord !== word) {
+    preWord = word
     const hashCode = hash(word)
+    console.log(`${word}-${hashCode}`)
     tipsElement.setText(hashCode + '')
+    tipsElement.setPos(e.pageX + 4, e.pageY - tipsElement.element.clientHeight - 4)
     tipsElement.show()
     // const jsonText = await loadResource(`/dict/${hashCode}.json`)
     // const dict = JSON.parse(jsonText) as Dict
-    // if (word in dict) {
-    //   tipsElement.setPos(e.pageX + 4, e.pageY - tipsElement.element.clientHeight - 4)
-    //   tipsElement.setText(dict[word].word)
-    //   tipsElement.show()
-    // }
+    const dict: Dict = {word: {word: word, phonetic: '', translation: ''}}
+    if (word in dict) {
+      tipsElement.setPos(e.pageX + 4, e.pageY - tipsElement.element.clientHeight - 4)
+      tipsElement.setText(dict[word].word)
+      tipsElement.show()
+    }
   } else {
     tipsElement.hide()
   }
