@@ -1,45 +1,49 @@
-import {Dict, hash, isWord} from "../../utils/util"
+import {Dict, DictRecord, hash, isWord, loadResource} from "../../utils/util"
 
 class TipsElement {
 
   element = document.createElement('div')
+  dictRecord: DictRecord = {word: '', phonetic: '', translation: ''}
+  x = 0
+  y = 0
+  hidden = true
 
   constructor() {
-    this.element.style.position = 'absolute'
-    this.setPos(0, -100)
-    this.setText('default')
-    this.element.style.background = '#323232'
-    this.element.style.color = '#ffffff'
-    this.element.style.padding = '8px'
-    this.element.style.borderRadius = '2px'
-    // this.hide()
     document.body.append(this.element)
+    this.render()
+  }
+
+  render() {
+    const staticStyles = 'z-index: 1000; position: absolute; background: #323232; color: #ffffff; padding: 8px; border-radius: 2px;'
+    const display = `display: ${this.hidden ? 'none' : 'block'};`
+    const pos = `left: ${this.x}px; top: ${this.y}px`
+
+    this.element.setAttribute('style', `${staticStyles} ${display} ${pos}`)
+    this.element.innerHTML = `
+      <p style="color: #ffffff; font-size: 12px; margin-top: 0; margin-bottom: 4px;">${this.dictRecord.word}</p>
+      <p style="color: #ffffff; font-size: 12px; margin-top: 0; margin-bottom: 0;">${this.dictRecord.translation}</p>
+    `
   }
 
   setPos(x: number, y: number) {
-    this.element.style.left = x + 'px'
-    this.element.style.top = y + 'px'
+    this.x = x
+    this.y = y
+    this.render()
   }
 
-  setText(text: string) {
-    this.element.innerText = text
+  setDictRecord(record: DictRecord) {
+    this.dictRecord = record
+    this.render()
   }
 
   show() {
-    this.element.style.display = 'block'
+    this.hidden = false
+    this.render()
   }
 
   hide() {
-    this.element.style.display = 'none'
-  }
-
-  bindTo(target: HTMLElement) {
-    if (!target.parentElement) return
-    this.element.parentElement?.removeChild(this.element)
-    target.parentElement.appendChild(this.element)
-    const left = target.offsetLeft
-    const top = target.offsetTop
-    this.setPos(left, top - target.clientHeight - this.element.clientHeight - 4)
+    this.hidden = true
+    this.render()
   }
 }
 
@@ -70,23 +74,22 @@ function getWordUnderCursor(event: MouseEvent): string {
 
 let preWord = ''
 
-document!.body.onmousemove = async function (e) {
+document!.body.onmousemove = function (e) {
   const word = getWordUnderCursor(e)
-  if (word && preWord !== word) {
-    preWord = word
-    const hashCode = hash(word)
-    console.log(`${word}-${hashCode}`)
-    tipsElement.setText(hashCode + '')
+  if (word) {
+    if (preWord !== word) {
+      preWord = word
+      const hashCode = hash(word)
+      console.log(`${word}-${hashCode}`)
+      tipsElement.show()
+      loadResource<Dict>(`/dictionaries/${hashCode}.json`, dict => {
+        if (word in dict) {
+          tipsElement.setDictRecord(dict[word])
+        }
+      })
+    }
     tipsElement.setPos(e.pageX + 4, e.pageY - tipsElement.element.clientHeight - 4)
     tipsElement.show()
-    // const jsonText = await loadResource(`/dict/${hashCode}.json`)
-    // const dict = JSON.parse(jsonText) as Dict
-    const dict: Dict = {word: {word: word, phonetic: '', translation: ''}}
-    if (word in dict) {
-      tipsElement.setPos(e.pageX + 4, e.pageY - tipsElement.element.clientHeight - 4)
-      tipsElement.setText(dict[word].word)
-      tipsElement.show()
-    }
   } else {
     tipsElement.hide()
   }
