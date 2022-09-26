@@ -1,25 +1,20 @@
 import React from 'react';
-import logo from '../../assets/img/logo.svg';
-import Greetings from '../../containers/Greetings/Greetings';
-import './Popup.css';
+import CheckBox from '../../components/Switch'
+import styled from "styled-components";
+
+const SettingLine = styled.div`
+  line-height: 35px;
+  vertical-align: middle;
+  color: #515151;
+  user-select: none;
+`
 
 const Popup = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/pages/Popup/Popup.jsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React!
-        </a>
-      </header>
+    <div>
+      <h3 style={{marginTop: 0, color: '#2e2e2e'}}>苏打薄荷翻译</h3>
+      <SettingLine><b>即时翻译</b>&nbsp;<CheckBox checked={false}/></SettingLine>
+      <SettingLine><b>选词翻译</b>&nbsp;<CheckBox checked={false}/></SettingLine>
     </div>
   );
 };
