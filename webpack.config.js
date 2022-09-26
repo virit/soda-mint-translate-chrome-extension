@@ -135,6 +135,10 @@ const options = {
             );
           },
         },
+        {
+          from: 'src/dictionaries',
+          to: path.join(__dirname, 'build/dictionaries')
+        }
       ],
     }),
     new CopyWebpackPlugin({
