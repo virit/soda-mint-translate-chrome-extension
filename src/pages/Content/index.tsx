@@ -1,5 +1,5 @@
 import {Dict, hash, isWord, loadResource} from "../../utils/util";
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import styled from "styled-components";
 import {render} from "react-dom";
 
@@ -64,14 +64,30 @@ const TranslationTips: React.FC<TranslationTipsProps> = (props) => {
     }
   );
 
+  const [height, setHeight] = useState(0);
+
+  const measuredRef = useCallback(node => {
+    if (node !== null) {
+      console.log(node.getBoundingClientRect().height);
+      setHeight(node.getBoundingClientRect().height);
+    }
+  }, []);
+
   props.api.setState = setState;
   props.api.state = state;
 
+  const stateTransfer = {
+    ...state,
+    x: state.x + 4,
+    y: state.y - 4 - height
+  };
+
   return (
-    <StyledTranslationTips {...state} ref={el => api.element = el!}>
+    state.visible ?
+    <StyledTranslationTips {...stateTransfer} ref={measuredRef}>
       <StyledWord>{state.word}</StyledWord>
       <StyledTranslation>{state.translation}</StyledTranslation>
-    </StyledTranslationTips>
+    </StyledTranslationTips> : <></>
   );
 };
 
@@ -131,8 +147,8 @@ document!.body.onmousemove = async (e) => {
     api.setState!({
       ...api.state!,
       word: word,
-      x: e.pageX + 4,
-      y: e.pageY - api.element!.clientHeight - 4
+      x: e.pageX,
+      y: e.pageY
     });
     if (preWord !== word) {
       preWord = word;
@@ -142,7 +158,9 @@ document!.body.onmousemove = async (e) => {
         api.setState!({
           ...api.state!,
           translation: dict[word].translation,
-          visible: true
+          visible: true,
+          x: e.pageX,
+          y: e.pageY
         });
       } else {
         api.setState!({
