@@ -68,7 +68,6 @@ const TranslationTips: React.FC<TranslationTipsProps> = (props) => {
 
   const measuredRef = useCallback(node => {
     if (node !== null) {
-      console.log(node.getBoundingClientRect().height);
       setHeight(node.getBoundingClientRect().height);
     }
   }, []);
