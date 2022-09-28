@@ -1,4 +1,4 @@
-import {Dict, hash, isWord, loadResource} from "../../utils/util";
+import {Dict, DictRecord, hash, isWord, loadResource} from "../../utils/util";
 import React, {useCallback, useState} from "react";
 import styled from "styled-components";
 import {render} from "react-dom";
@@ -6,10 +6,7 @@ import {render} from "react-dom";
 interface TranslationTipsState {
   x: number;
   y: number;
-  // 单词
-  word: string;
-  // 翻译
-  translation: string;
+  dict: DictRecord;
   // 是否可见
   visible: boolean;
 }
@@ -30,7 +27,7 @@ const StyledTranslationTips = styled.div<TranslationTipsState>`
   position: absolute;
   background: rgba(50, 50, 50, 0.9);
   padding: 8px;
-  border-radius: 2px;
+  border-radius: 4px;
   display: ${p => p.visible ? 'block' : 'none'};
   left: ${p => p.x}px;
   top: ${p => p.y}px;
@@ -41,7 +38,15 @@ const StyledWord = styled.p`
   color: #ffffff;
   font-size: 14px;
   margin-top: 0;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+`;
+
+const StyledPhonetic = styled.p`
+  white-space: pre-line;
+  color: #b2b2b2;
+  font-size: 4px;
+  margin-top: 0;
+  margin-bottom: 0;
 `;
 
 const StyledTranslation = styled.p`
@@ -58,8 +63,11 @@ const TranslationTips: React.FC<TranslationTipsProps> = (props) => {
     {
       x: 0,
       y: 0,
-      word: '',
-      translation: '',
+      dict: {
+        word: '',
+        phonetic: '',
+        translation: ''
+      },
       visible: false,
     }
   );
@@ -84,8 +92,9 @@ const TranslationTips: React.FC<TranslationTipsProps> = (props) => {
   return (
     state.visible ?
     <StyledTranslationTips {...stateTransfer} ref={measuredRef}>
-      <StyledWord>{state.word}</StyledWord>
-      <StyledTranslation>{state.translation}</StyledTranslation>
+      <StyledWord>{state.dict.word}</StyledWord>
+      <StyledPhonetic>{state.dict.phonetic}</StyledPhonetic>
+      <StyledTranslation>{state.dict.translation}</StyledTranslation>
     </StyledTranslationTips> : <></>
   );
 };
@@ -145,7 +154,6 @@ document!.body.onmousemove = async (e) => {
   if (isWord(word)) {
     api.setState!({
       ...api.state!,
-      word: word,
       x: e.pageX,
       y: e.pageY
     });
@@ -156,7 +164,7 @@ document!.body.onmousemove = async (e) => {
       if (word in dict) {
         api.setState!({
           ...api.state!,
-          translation: dict[word].translation,
+          dict: dict[word],
           visible: true,
           x: e.pageX,
           y: e.pageY
