@@ -23,38 +23,41 @@ interface TranslationTipsProps {
 }
 
 const StyledTranslationTips = styled.div<TranslationTipsState>`
-  z-index: 9007199254740992;
-  position: absolute;
-  background: rgba(50, 50, 50, 0.9);
-  padding: 8px;
-  border-radius: 4px;
-  display: ${p => p.visible ? 'block' : 'none'};
-  left: ${p => p.x}px;
-  top: ${p => p.y}px;
+  z-index: 9007199254740992 !important;
+  position: absolute !important;
+  background: rgba(50, 50, 50) !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  display: ${p => p.visible ? 'block' : 'none'} !important;
+  left: ${p => p.x}px !important;
+  top: ${p => p.y}px !important;
 `;
 
 const StyledWord = styled.p`
-  font-weight: bold;
-  color: #ffffff;
-  font-size: 14px;
-  margin-top: 0;
-  margin-bottom: 2px;
+  font-weight: bold !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  margin-top: 0 !important;
+  margin-bottom: 4px !important;
+  line-height: normal !important;
 `;
 
 const StyledPhonetic = styled.p`
-  white-space: pre-line;
-  color: #b2b2b2;
-  font-size: 4px;
-  margin-top: 0;
-  margin-bottom: 0;
+  white-space: pre-line !important;
+  color: #b2b2b2 !important;
+  font-size: 4px !important;
+  margin-top: 0 !important;
+  margin-bottom: 4px !important;
+  line-height: normal !important;
 `;
 
 const StyledTranslation = styled.p`
-  white-space: pre-line;
-  color: #ffffff;
-  font-size: 12px;
-  margin-top: 0;
-  margin-bottom: 0;
+  white-space: pre-line !important;
+  color: #ffffff !important;
+  font-size: 12px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  line-height: normal !important;
 `;
 
 const TranslationTips: React.FC<TranslationTipsProps> = (props) => {
