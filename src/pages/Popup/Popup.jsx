@@ -1,5 +1,4 @@
 import React from 'react';
-import CheckBox from '../../components/Switch'
 import styled from "styled-components";
 
 const SettingLine = styled.div`
@@ -12,9 +11,7 @@ const SettingLine = styled.div`
 const Popup = () => {
   return (
     <div>
-      <h3 style={{marginTop: 0, color: '#2e2e2e'}}>苏打薄荷翻译</h3>
-      <SettingLine><b>即时翻译</b>&nbsp;<CheckBox checked={false}/></SettingLine>
-      <SettingLine><b>选词翻译</b>&nbsp;<CheckBox checked={false}/></SettingLine>
+      <h3 style={{marginTop: 0, color: '#2e2e2e'}}>翻译已开启</h3>
     </div>
   );
 };

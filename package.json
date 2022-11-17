@@ -1,11 +1,11 @@
 {
-  "name": "chrome-extension-boilerplate-react",
-  "version": "4.3.5",
-  "description": "A chrome extension boilerplate built with React 17, Webpack 5, and Webpack Dev Server 4",
+  "name": "chrome-extension-soda-mint-translate",
+  "version": "1.0",
+  "description": "苏打柠檬翻译",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lxieyang/chrome-extension-boilerplate-react.git"
+    "url": "https://github.com/virit/soda-mint-translate-chrome-extension"
   },
   "type": "module",
   "scripts": {
